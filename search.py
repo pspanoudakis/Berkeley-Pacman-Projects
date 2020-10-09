@@ -157,9 +157,6 @@ def uniformCostSearch(problem: SearchProblem):
                             frontier.update( (s[0], succesorPath), updatedCost )                
     return []
 
-    
-
-
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
