@@ -1,8 +1,8 @@
 *
-.vscode
+.vscode/*
 *.code-workspace
-.layouts
-__pycache__
-test_cases
+.layouts/*
+__pycache__/*
+test_cases/*
 !search.py
 !searchAgent.py
