@@ -164,6 +164,10 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
+def evalFunction(problem: SearchProblem, state, heuristicFunction):
+    return problem.getCostOfActions([state]) + heuristicFunction(state, problem)
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
