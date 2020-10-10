@@ -168,10 +168,25 @@ def nullHeuristic(state, problem=None):
 def evalFunction(problem: SearchProblem, state, actions, heuristicFunction):
     return problem.getCostOfActions(actions) + heuristicFunction(state, problem)
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currPath = []
+    currState = problem.getStartState()
+    frontier = PriorityQueue()
+    frontier.push( (currState, currPath), evalFunction(problem, currState, currPath, heuristic) )
+    explored = set()
+    while not frontier.isEmpty():
+        currState, currPath = frontier.pop()
+        if currState in explored:
+            continue
+        explored.add(currState)
+        if problem.isGoalState(currState):
+            return currPath
+        for s in problem.getSuccessors(currState):
+            if s[0] not in explored:
+                succesorPath = currPath + [s[1]]
+                frontier.push( (s[0], succesorPath), evalFunction(problem, s[0], succesorPath, heuristic) )
+    return []
 
 
 # Abbreviations
