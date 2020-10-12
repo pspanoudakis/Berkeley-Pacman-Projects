@@ -285,9 +285,10 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
-        # Please add any code here which you would like to use
-        # in initializing the problem
-        "*** YOUR CODE HERE ***"
+        self.visitedCorners = { "top-right": False,
+                                "top-left": False,
+                                "bottom-right": False,
+                                "bottom-left": False }
 
     def getStartState(self):
         """
