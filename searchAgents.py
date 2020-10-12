@@ -41,6 +41,7 @@ import util
 import time
 import search
 
+
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
 
@@ -55,6 +56,7 @@ class GoWestAgent(Agent):
 # This portion is written for you, but will only work #
 #       after you fill in parts of search.py          #
 #######################################################
+
 
 class SearchAgent(Agent):
     """
@@ -132,6 +134,7 @@ class SearchAgent(Agent):
             return self.actions[i]
         else:
             return Directions.STOP
+
 
 class PositionSearchProblem(search.SearchProblem):
     """
@@ -226,6 +229,7 @@ class PositionSearchProblem(search.SearchProblem):
             cost += self.costFn((x,y))
         return cost
 
+
 class StayEastSearchAgent(SearchAgent):
     """
     An agent for position search with a cost function that penalizes being in
@@ -237,6 +241,7 @@ class StayEastSearchAgent(SearchAgent):
         self.searchFunction = search.uniformCostSearch
         costFn = lambda pos: .5 ** pos[0]
         self.searchType = lambda state: PositionSearchProblem(state, costFn, (1, 1), None, False)
+
 
 class StayWestSearchAgent(SearchAgent):
     """
@@ -262,9 +267,6 @@ def euclideanHeuristic(position, problem, info={}):
     xy2 = problem.goal
     return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
 
-#####################################################
-# This portion is incomplete.  Time to write code!  #
-#####################################################
 
 class CornersProblem(search.SearchProblem):
     """
@@ -285,10 +287,10 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
-        self.visitedCorners = { "top-right": False,
-                                "top-left": False,
-                                "bottom-right": False,
-                                "bottom-left": False }
+        self.visitedCorners = { (1,1): False,
+                                (1,top): False,
+                                (right, 1): False,
+                                (right, top): False }
 
     def getStartState(self):
         """
@@ -302,8 +304,11 @@ class CornersProblem(search.SearchProblem):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        cornerStatus = state[1]
+        if False in [ cornerStatus[i] for i in cornerStatus ]:
+            return False
+        return True
+
 
     def getSuccessors(self, state):
         """
@@ -315,17 +320,20 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            parentX, parentY = state[0]
+            dx, dy = Actions.directionToVector(action)
+            successorX, successorY = int(parentX + dx), int(parentY + dy)
+            hitsWall = self.walls[successorX][successorY]
+            successorCornerState = dict(state[1])
 
-            "*** YOUR CODE HERE ***"
+            if not hitsWall:
+                if (successorX, successorY) in self.corners:
+                    successorCornerState[(successorX, successorY)] = True
+                
+                successorState = ( (successorX, successorY),successorCornerState )                
+                successors.append(successorState, action, 1)
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -363,11 +371,13 @@ def cornersHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     return 0 # Default to trivial solution
 
+
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
         self.searchFunction = lambda prob: search.aStarSearch(prob, cornersHeuristic)
         self.searchType = CornersProblem
+
 
 class FoodSearchProblem:
     """
@@ -419,11 +429,13 @@ class FoodSearchProblem:
             cost += 1
         return cost
 
+
 class AStarFoodSearchAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
+
 
 def foodHeuristic(state, problem):
     """
@@ -457,6 +469,7 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     return 0
 
+
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
@@ -487,6 +500,7 @@ class ClosestDotSearchAgent(SearchAgent):
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -523,6 +537,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+
 
 def mazeDistance(point1, point2, gameState):
     """
