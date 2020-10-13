@@ -369,14 +369,47 @@ def cornersHeuristic(state, problem: CornersProblem):
         return 0
     visited = state[1]
     x, y = state[0]
-    minCornerDistance = float('inf')
+    #minCornerDistance = float('inf')
+    maxCornerDistance = -1
     for i in range(0, len(corners)):
         if visited[i]:
             continue
         cornerDistance = abs(x - corners[i][0]) + abs(y - corners[i][1])
-        if cornerDistance < minCornerDistance:
-            minCornerDistance = cornerDistance
-    return minCornerDistance
+        #cornerDistance += interlayingWalls(state[0], corners[i], walls)
+        if cornerDistance > maxCornerDistance:
+            maxCornerDistance = cornerDistance
+    return maxCornerDistance
+
+def interlayingWalls (state, goal, walls):
+    if state[0] > goal[0]:
+        maxX = state[0]
+        minX = goal[0]
+    else:
+        maxX = goal[0]
+        minX = state[0]
+    if state[1] > goal[1]:
+        maxY = state[1]
+        minY = goal[1]
+    else:
+        maxY = goal[1]
+        minY = state[1]
+
+    firstCaseCount = 0
+    for i in range(minX + 1, maxX):
+        if walls[i][ state[1] ]:
+            firstCaseCount += 1
+    for i in range(minY + 1, maxY):
+        if walls[ goal[0] ][i]:
+            firstCaseCount += 1
+    secondCaseCount = 0
+    for i in range(minY + 1, maxY):
+        if walls[ state[0] ][i]:
+            secondCaseCount += 1
+    for i in range(minX + 1, maxX):
+        if walls[i][ goal[1] ]:
+            secondCaseCount += 1
+    
+    return min((firstCaseCount*2, secondCaseCount*2))
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
