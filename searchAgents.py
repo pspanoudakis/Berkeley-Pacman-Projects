@@ -287,25 +287,21 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
-        self.visitedCorners = { (1,1): False,
-                                (1,top): False,
-                                (right, 1): False,
-                                (right, top): False }
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        startState = (self.startingPosition, self.visitedCorners)
+        visitedCorners = [ False for c in self.corners]
+        startState = (self.startingPosition, tuple(visitedCorners))
         return startState
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        cornerStatus = state[1]
-        if False in [ cornerStatus[i] for i in cornerStatus ]:
+        if False in state[1]:
             return False
         return True
 
@@ -326,14 +322,15 @@ class CornersProblem(search.SearchProblem):
             dx, dy = Actions.directionToVector(action)
             successorX, successorY = int(parentX + dx), int(parentY + dy)
             hitsWall = self.walls[successorX][successorY]
-            successorCornerState = dict(state[1])
 
             if not hitsWall:
+                successorCornerState = list(state[1])
                 if (successorX, successorY) in self.corners:
-                    successorCornerState[(successorX, successorY)] = True
-                
-                successorState = ( (successorX, successorY),successorCornerState )                
-                successors.append(successorState, action, 1)
+                    cornerIndex = self.corners.index( (successorX, successorY) )
+                    successorCornerState[cornerIndex] = True
+
+                successorState = ( (successorX, successorY), tuple(successorCornerState) )                
+                successors.append((successorState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
