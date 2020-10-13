@@ -444,7 +444,7 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchType = FoodSearchProblem
 
 
-def foodHeuristic(state, problem):
+def foodHeuristic(state, problem: FoodSearchProblem):
     """
     Your heuristic for the FoodSearchProblem goes here.
 
@@ -472,9 +472,18 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
+    if problem.isGoalState(state):
+        return 0
+    
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    x, y = position
+    maxFoodDistance = -1
+    food = foodGrid.asList()
+    for f in food:
+        foodDistance = abs(x - f[0]) + abs(y - f[1])
+        if foodDistance > maxFoodDistance:
+                    maxFoodDistance = foodDistance
+    return maxFoodDistance
 
 
 class ClosestDotSearchAgent(SearchAgent):
