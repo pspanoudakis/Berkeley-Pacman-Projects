@@ -368,16 +368,22 @@ def cornersHeuristic(state, problem: CornersProblem):
     if problem.isGoalState(state):
         return 0
     visited = state[1]
-    x, y = state[0]
+    #x, y = state[0]
     maxCornerDistance = -1
     for i in range(0, len(corners)):
         if visited[i]:
             continue
-        cornerDistance = abs(x - corners[i][0]) + abs(y - corners[i][1])
+        #cornerDistance = abs(x - corners[i][0]) + abs(y - corners[i][1])
+        cornerDistance = manhattanDistance(state[0], corners[i])
         if cornerDistance > maxCornerDistance:
             maxCornerDistance = cornerDistance
     return maxCornerDistance
+    maxCornerDistance = -1
 
+def manhattanDistance( posA, posB ):
+    """ Returns the Manhattan Distance between the specified positions.
+        Each position must be an iterable with X-coordinate as element 0, and Y-coordinate as element 1."""
+    return abs(posA[0] - posB[0]) + abs(posA[1] - posB[1])
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -476,11 +482,12 @@ def foodHeuristic(state, problem: FoodSearchProblem):
         return 0
     
     position, foodGrid = state
-    x, y = position
+    #x, y = position
     maxFoodDistance = -1
     food = foodGrid.asList()
     for f in food:
-        foodDistance = abs(x - f[0]) + abs(y - f[1])
+        #foodDistance = abs(x - f[0]) + abs(y - f[1])
+        foodDistance = manhattanDistance( position, f )
         if foodDistance > maxFoodDistance:
                     maxFoodDistance = foodDistance
     return maxFoodDistance
