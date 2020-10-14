@@ -482,16 +482,44 @@ def foodHeuristic(state, problem: FoodSearchProblem):
         return 0
     
     position, foodGrid = state
-    #x, y = position
     maxFoodDistance = -1
     food = foodGrid.asList()
     for f in food:
-        #foodDistance = abs(x - f[0]) + abs(y - f[1])
-        foodDistance = manhattanDistance( position, f )
+        foodDistance = manhattanDistance( position, f ) + interlayingWalls(position, f, problem.walls)
         if foodDistance > maxFoodDistance:
                     maxFoodDistance = foodDistance
     return maxFoodDistance
 
+def interlayingWalls (state, goal, walls):
+    if state[0] > goal[0]:
+        maxX = state[0]
+        minX = goal[0]
+    else:
+        maxX = goal[0]
+        minX = state[0]
+    if state[1] > goal[1]:
+        maxY = state[1]
+        minY = goal[1]
+    else:
+        maxY = goal[1]
+        minY = state[1]
+
+    firstCaseCount = 0
+    for i in range(minX + 1, maxX):
+        if walls[i][ state[1] ]:
+            firstCaseCount += 1
+    for i in range(minY + 1, maxY):
+        if walls[ goal[0] ][i]:
+            firstCaseCount += 1
+    secondCaseCount = 0
+    for i in range(minY + 1, maxY):
+        if walls[ state[0] ][i]:
+            secondCaseCount += 1
+    for i in range(minX + 1, maxX):
+        if walls[i][ goal[1] ]:
+            secondCaseCount += 1
+    
+    return min((firstCaseCount, secondCaseCount))
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
