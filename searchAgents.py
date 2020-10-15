@@ -550,7 +550,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        return search.uniformCostSearch(problem)
+        return search.breadthFirstSearch(problem)
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
