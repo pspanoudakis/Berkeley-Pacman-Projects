@@ -482,13 +482,25 @@ def foodHeuristic(state, problem: FoodSearchProblem):
         return 0
     
     position, foodGrid = state
-    maxFoodDistance = -1
     food = foodGrid.asList()
+    maxFoodDistance = -1
+
+    # Fast Solution, but does not get the autograder bonus:
+    # For each food dot, get the Manhattan distance from current position
+    # and increase it by the smallest number of possibly interlaying walls (to increase the maximum return value
+    # of the heuristic, and therfore decrease the total number of expanded nodes):
     for f in food:
         foodDistance = manhattanDistance( position, f ) + interlayingWalls(position, f, problem.walls)
         if foodDistance > maxFoodDistance:
                     maxFoodDistance = foodDistance
     return maxFoodDistance
+
+    # Alternative solution (significantly slower, but manages to pass autograder and also get the bonus)
+    # for f in food:
+    #     foodDistance = mazeDistance(position, f, problem.startingGameState)
+    #     if foodDistance > maxFoodDistance:
+    #         maxFoodDistance = foodDistance
+    # return maxFoodDistance
 
 def interlayingWalls (state, goal, walls):
     if state[0] > goal[0]:
