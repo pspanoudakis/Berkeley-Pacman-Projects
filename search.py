@@ -176,15 +176,22 @@ def aStarSearch(problem: SearchProblem, heuristic = nullHeuristic, eval = evalFu
     explored = set()
     while not frontier.isEmpty():
         currState, currPath = frontier.pop()
-        if currState in explored:
-            continue
         explored.add(currState)
         if problem.isGoalState(currState):
             return currPath
+        frontierStates = [ i[2][0] for i in frontier.heap ]
         for s in problem.getSuccessors(currState):
-            if s[0] not in explored:
-                succesorPath = currPath + [s[1]]
+            succesorPath = currPath + [s[1]]
+            if s[0] not in explored and s[0] not in frontierStates:
                 frontier.push( (s[0], succesorPath), eval(problem, s[0], succesorPath, heuristic) )
+            else:
+                for i in range(0, len(frontierStates)):
+                    if s[0] == frontierStates[i]:
+                        updatedCost = eval(problem, s[0], succesorPath, heuristic)
+                        storedCost = frontier.heap[i][0]
+                        if storedCost > updatedCost:
+                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], succesorPath) )
+                            frontier.update( (s[0], succesorPath), updatedCost )
     return []
 
 
