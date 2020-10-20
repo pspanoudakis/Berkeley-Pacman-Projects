@@ -149,7 +149,6 @@ def uniformCostSearch(problem: SearchProblem):
             else:
                 for i in range(0, len(frontierStates)):
                     if s[0] == frontierStates[i]:
-#                    if s[0] is frontier.heap[i][0][0]:
                         updatedCost = problem.getCostOfActions(succesorPath)
                         storedCost = frontier.heap[i][0]
                         if storedCost > updatedCost:
