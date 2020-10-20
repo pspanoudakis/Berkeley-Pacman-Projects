@@ -175,9 +175,9 @@ def aStarSearch(problem: SearchProblem, heuristic = nullHeuristic, eval = evalFu
     explored = set()
     while not frontier.isEmpty():
         currState, currPath = frontier.pop()
-        explored.add(currState)
         if problem.isGoalState(currState):
             return currPath
+        explored.add(currState)
         frontierStates = [ i[2][0] for i in frontier.heap ]
         for s in problem.getSuccessors(currState):
             succesorPath = currPath + [s[1]]
