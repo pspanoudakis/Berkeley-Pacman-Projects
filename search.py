@@ -93,9 +93,8 @@ def depthFirstSearch(problem: SearchProblem):
             return currPath
         #-----------------------------------
         explored.add(currState)
-        # frontierStates = [ t[0] for t in frontier.list ]
         for s in problem.getSuccessors(currState):
-            if s[0] not in explored:# and s[0] not in frontierStates:
+            if s[0] not in explored:
                 # Lecture code:
                 #if problem.isGoalState(s[0]):
                 #    return currPath + [s[1]]
