@@ -488,20 +488,16 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     
     position, foodGrid = state
     food = foodGrid.asList()
-    totalDistance = 0
-    currPosition = position
-    minFood = ()
-    while len(food) > 0:
-        minDistance = float('inf')
-        for f in food:
-            dist = euclideanDistance(currPosition, f)
-            if dist < minDistance:
-                minDistance = dist
-                minFood = f
-        currPosition = minFood
-        totalDistance += minDistance
-        food.remove(currPosition)
-    return totalDistance
+    maxDistance = -1
+    for f1 in food:
+        for f2 in food:
+            dist = manhattanDistance(f1, f2)
+            if dist > maxDistance:
+                maxDistance = dist
+                first = f1
+                second = f2
+    
+    return maxDistance + min( (manhattanDistance(position, first), manhattanDistance(position, second)) )
 
 def interlayingWalls (state, goal, walls):
     if state[0] > goal[0]:
