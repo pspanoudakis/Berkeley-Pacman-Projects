@@ -385,6 +385,11 @@ def manhattanDistance( posA, posB ):
         Each position must be an iterable with X-coordinate as element 0, and Y-coordinate as element 1."""
     return abs(posA[0] - posB[0]) + abs(posA[1] - posB[1])
 
+def euclideanDistance( posA, posB ):
+    """ Returns the Euclidean Distance between the specified positions.
+        Each position must be an iterable with X-coordinate as element 0, and Y-coordinate as element 1."""
+    return ( (posA[0] - posB[0])**2 + (posA[1] - posB[1])**2 )**0.5
+
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
@@ -483,24 +488,20 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     
     position, foodGrid = state
     food = foodGrid.asList()
-    maxFoodDistance = -1
-
-    # Fast Solution, but does not get the autograder bonus:
-    # For each food dot, get the Manhattan distance from current position
-    # and increase it by the smallest number of possibly interlaying walls (to increase the maximum return value
-    # of the heuristic, and therfore decrease the total number of expanded nodes):
-    for f in food:
-        foodDistance = manhattanDistance( position, f ) + interlayingWalls(position, f, problem.walls)
-        if foodDistance > maxFoodDistance:
-                    maxFoodDistance = foodDistance
-    return maxFoodDistance
-
-    # Alternative solution (significantly slower, but manages to pass autograder and also get the bonus)
-    # for f in food:
-    #     foodDistance = mazeDistance(position, f, problem.startingGameState)
-    #     if foodDistance > maxFoodDistance:
-    #         maxFoodDistance = foodDistance
-    # return maxFoodDistance
+    totalDistance = 0
+    currPosition = position
+    minFood = ()
+    while len(food) > 0:
+        minDistance = float('inf')
+        for f in food:
+            dist = euclideanDistance(currPosition, f)
+            if dist < minDistance:
+                minDistance = dist
+                minFood = f
+        currPosition = minFood
+        totalDistance += minDistance
+        food.remove(currPosition)
+    return totalDistance
 
 def interlayingWalls (state, goal, walls):
     if state[0] > goal[0]:
