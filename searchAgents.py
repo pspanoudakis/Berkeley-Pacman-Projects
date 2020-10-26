@@ -490,14 +490,16 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     
     position, foodGrid = state
     food = foodGrid.asList()
-    maxDistance = -1
-    for f1 in food:
-        for f2 in food:
-            dist = manhattanDistance(f1, f2)
+    maxDistance = 0
+    first = food[0]
+    second = food[0]
+    for i in range(len(food)):
+        for j in range(i + 1, len(food)):
+            dist = manhattanDistance(food[i], food[j])
             if dist > maxDistance:
                 maxDistance = dist
-                first = f1
-                second = f2
+                first = food[i]
+                second = food[j]
     
     return maxDistance + min( (manhattanDistance(position, first), manhattanDistance(position, second)) )
 
