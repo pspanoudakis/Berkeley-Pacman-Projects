@@ -375,7 +375,6 @@ def cornersHeuristic(state, problem: CornersProblem):
     for i in range(0, len(corners)):
         if visited[i]:
             continue
-        #cornerDistance = abs(x - corners[i][0]) + abs(y - corners[i][1])
         cornerDistance = manhattanDistance(state[0], corners[i])
         if cornerDistance > maxCornerDistance:
             maxCornerDistance = cornerDistance
