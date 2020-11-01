@@ -370,7 +370,6 @@ def cornersHeuristic(state, problem: CornersProblem):
     if problem.isGoalState(state):
         return 0
     visited = state[1]
-    #x, y = state[0]
     maxCornerDistance = -1
     for i in range(0, len(corners)):
         if visited[i]:
