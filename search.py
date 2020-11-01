@@ -93,9 +93,8 @@ def depthFirstSearch(problem: SearchProblem):
             return currPath
         #-----------------------------------
         explored.add(currState)
-        # frontierStates = [ t[0] for t in frontier.list ]
         for s in problem.getSuccessors(currState):
-            if s[0] not in explored:# and s[0] not in frontierStates:
+            if s[0] not in explored:
                 # Lecture code:
                 #if problem.isGoalState(s[0]):
                 #    return currPath + [s[1]]
@@ -149,16 +148,12 @@ def uniformCostSearch(problem: SearchProblem):
             else:
                 for i in range(0, len(frontierStates)):
                     if s[0] == frontierStates[i]:
-#                    if s[0] is frontier.heap[i][0][0]:
                         updatedCost = problem.getCostOfActions(succesorPath)
                         storedCost = frontier.heap[i][0]
                         if storedCost > updatedCost:
                             frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], succesorPath) )
                             frontier.update( (s[0], succesorPath), updatedCost )                
     return []
-
-    
-
 
 def nullHeuristic(state, problem=None):
     """
@@ -167,10 +162,35 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def evalFunction(problem: SearchProblem, state, actions, heuristicFunction):
+    return problem.getCostOfActions(actions) + heuristicFunction(state, problem)
+
+def aStarSearch(problem: SearchProblem, heuristic = nullHeuristic, eval = evalFunction):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currPath = []
+    currState = problem.getStartState()
+    frontier = PriorityQueue()
+    frontier.push( (currState, currPath), eval(problem, currState, currPath, heuristic) )
+    explored = set()
+    while not frontier.isEmpty():
+        currState, currPath = frontier.pop()
+        if problem.isGoalState(currState):
+            return currPath
+        explored.add(currState)
+        frontierStates = [ i[2][0] for i in frontier.heap ]
+        for s in problem.getSuccessors(currState):
+            succesorPath = currPath + [s[1]]
+            if s[0] not in explored and s[0] not in frontierStates:
+                frontier.push( (s[0], succesorPath), eval(problem, s[0], succesorPath, heuristic) )
+            else:
+                for i in range(0, len(frontierStates)):
+                    if s[0] == frontierStates[i]:
+                        updatedCost = eval(problem, s[0], succesorPath, heuristic)
+                        storedCost = frontier.heap[i][0]
+                        if storedCost > updatedCost:
+                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], succesorPath) )
+                            frontier.update( (s[0], succesorPath), updatedCost )
+    return []
 
 
 # Abbreviations
