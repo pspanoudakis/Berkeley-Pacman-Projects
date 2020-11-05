@@ -191,25 +191,25 @@ def aStarSearch(problem: SearchProblem, heuristic = nullHeuristic, eval = evalFu
         explored.add(currState)
         frontierStates = [ i[2][0] for i in frontier.heap ]     # frontier.heap[i][2] is the state tuple: (position, path)
         for s in problem.getSuccessors(currState):
-            succesorPath = currPath + [s[1]]        # The path to the new successor
+            successorPath = currPath + [s[1]]        # The path to the new successor
             if s[0] not in explored and s[0] not in frontierStates:
-                frontier.push( (s[0], succesorPath), eval(problem, s[0], succesorPath, heuristic) )
+                frontier.push( (s[0], successorPath), eval(problem, s[0], successorPath, heuristic) )
             else:
                 # The same state already exists
                 for i in range(0, len(frontierStates)):
                     # Finding it
                     if s[0] == frontierStates[i]:
                         # The stored path and the new path costs have to be compared
-                        updatedCost = eval(problem, s[0], succesorPath, heuristic)
+                        updatedCost = eval(problem, s[0], successorPath, heuristic)
                         storedCost = frontier.heap[i][0]    # frontier.heap[i] is a tuple: (cost, counter, (node, path))
                         if storedCost > updatedCost:
                             # The cost must be updated
                             # Plus, (s[0], <stored_path>) must be changed to (s[0], successorPath)
                             # Tuples are immutable, so frontier.heap[i] must be reconstructed
                             # First we manually change just the path, while keeping the cost unchanged
-                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], succesorPath) )
+                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], successorPath) )
                             # and then we update the cost
-                            frontier.update( (s[0], succesorPath), updatedCost )
+                            frontier.update( (s[0], successorPath), updatedCost )
 
     return []       # If this point is reached, a solution could not be found.
 
