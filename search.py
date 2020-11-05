@@ -129,7 +129,7 @@ def breadthFirstSearch(problem: SearchProblem):
     return []       # If this point is reached, a solution could not be found.
 
 def uniformCostSearch(problem: SearchProblem):
-    """Search the node of least total cost first."""
+    """ Search the node of least total cost first. """
     currPath = []           # The path that is popped from the frontier in each loop
     currState = problem.getStartState()     # The state(position) that is popped for the frontier in each loop
     frontier = PriorityQueue()
