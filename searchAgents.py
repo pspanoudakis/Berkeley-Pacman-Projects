@@ -278,9 +278,7 @@ class CornersProblem(search.SearchProblem):
     """
 
     def __init__(self, startingGameState):
-        """
-        Stores the walls, pacman's starting position and corners.
-        """
+        """ Stores the walls, pacman's starting position and corners. """
         self.walls = startingGameState.getWalls()
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
@@ -293,9 +291,12 @@ class CornersProblem(search.SearchProblem):
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
-        space)
+        space).
+
+        Each State is a tuple `(position, visitedCorners)` where `visitedCorners` is a tuple
+        with 4 boolean values, 1 for each corner (`False` == not visited, `True` == visited)
         """
-        visitedCorners = [ False for c in self.corners]
+        visitedCorners = [ False for c in self.corners]     # At start, all corners are unvisited
         startState = (self.startingPosition, tuple(visitedCorners))
         return startState
 
@@ -325,13 +326,21 @@ class CornersProblem(search.SearchProblem):
             successorX, successorY = int(parentX + dx), int(parentY + dy)
             hitsWall = self.walls[successorX][successorY]
 
+            # hitsWall will be True if there is a wall in this position, False otherwise.
             if not hitsWall:
+                # Time to create the successor state, which is a tuple (position, visitedCorners)
+                # The position is ready, so the visited corners tuple must be created
+                # First, get the visited corners tuple of the parent state, as a list
                 successorCornerState = list(state[1])
                 if (successorX, successorY) in self.corners:
+                    # The successor is a corner
                     cornerIndex = self.corners.index( (successorX, successorY) )
+                    # so update its status in the visited corners list as 'visited'
                     successorCornerState[cornerIndex] = True
 
-                successorState = ( (successorX, successorY), tuple(successorCornerState) )                
+                # Create the successor state. The corners list will be converted to a tuple
+                successorState = ( (successorX, successorY), tuple(successorCornerState) )
+                # Add the successor to the list, along with the required action and the cost
                 successors.append((successorState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -363,31 +372,37 @@ def cornersHeuristic(state, problem: CornersProblem):
     This function should always return a number that is a lower bound on the
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
+
+    Returns the maximum Manhattan Distance between the current state and any unvisited corner.
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    corners = problem.corners                   # These are the corner coordinates
+    walls = problem.walls                       # These are the walls of the maze, as a Grid (game.py)
 
     if problem.isGoalState(state):
-        return 0
-    visited = state[1]
+        return 0                                # Return 0 in case of a goal state
+    
+    visited = state[1]                          # Store the visited corners tuple here
     maxCornerDistance = -1
-    for i in range(0, len(corners)):
-        if visited[i]:
+    for i in range(0, len(corners)):            # Iterating through the corners tuple
+        if visited[i]:                          # Skip in case this corner is visited
             continue
-        cornerDistance = manhattanDistance(state[0], corners[i])
+        cornerDistance = manhattanDistance(state[0], corners[i])    # Not visited, so find the distance form the current state
         if cornerDistance > maxCornerDistance:
             maxCornerDistance = cornerDistance
+    
+    # Return the maximum distance found
+    # Note: -1 will never be returned, because if this is not a goal state,
+    # at least one corner distance will be calculated.
     return maxCornerDistance
-    maxCornerDistance = -1
 
 def manhattanDistance( posA, posB ):
     """ Returns the Manhattan Distance between the specified positions.
-        Each position must be an iterable with X-coordinate as element 0, and Y-coordinate as element 1."""
+        Each position must be an iterable with X-coordinate as element 0, and Y-coordinate as element 1. """
     return abs(posA[0] - posB[0]) + abs(posA[1] - posB[1])
 
 def euclideanDistance( posA, posB ):
     """ Returns the Euclidean Distance between the specified positions.
-        Each position must be an iterable with X-coordinate as element 0, and Y-coordinate as element 1."""
+        Each position must be an iterable with X-coordinate as element 0, and Y-coordinate as element 1. """
     return ( (posA[0] - posB[0])**2 + (posA[1] - posB[1])**2 )**0.5
 
 class AStarCornersAgent(SearchAgent):
@@ -529,7 +544,7 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
+        # Solving the problem using BFS, is the most suitable choice
         return search.breadthFirstSearch(problem)
 
 
@@ -564,8 +579,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x,y = state
-
+        x,y = state         # Any state with a food dot, is also a goal state
         return self.food[x][y]
 
 

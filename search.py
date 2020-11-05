@@ -77,83 +77,93 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem: SearchProblem):
     """ Search the deepest nodes in the search tree first. """
-    currPath = []
-    startState =  problem.getStartState()
+    currPath = []           # The path that is popped from the frontier in each loop
+    currState =  problem.getStartState()
 
-    if problem.isGoalState(startState):
+    if problem.isGoalState(currState):     # Checking if the start state is also a goal state
         return currPath
 
     frontier = Stack()
-    frontier.push( (startState, currPath) )
+    frontier.push( (currState, currPath) )     # Insert just the start state, in order to pop it first
     explored = set()
     while not frontier.isEmpty():
-        currState, currPath = frontier.pop()
+        currState, currPath = frontier.pop()    # Popping a state and the corresponding path
         # To pass autograder.py question1:
         if problem.isGoalState(currState):
             return currPath
-        #-----------------------------------
         explored.add(currState)
         for s in problem.getSuccessors(currState):
             if s[0] not in explored:
                 # Lecture code:
-                #if problem.isGoalState(s[0]):
-                #    return currPath + [s[1]]
-                frontier.push( (s[0], currPath + [s[1]]) )
-    return []   # Unable to find a solution
+                # if problem.isGoalState(s[0]):
+                #     return currPath + [s[1]]
+                frontier.push( (s[0], currPath + [s[1]]) )      # Adding the successor and its path to the frontier
+
+    return []       # If this point is reached, a solution could not be found.
 
 def breadthFirstSearch(problem: SearchProblem):
     """ Search the shallowest nodes in the search tree first. """
-    currPath = []
-    startState =  problem.getStartState()
+    currPath = []           # The path that is popped from the frontier in each loop
+    currState =  problem.getStartState()    # The state(position) that is popped for the frontier in each loop
 
-    if problem.isGoalState(startState):
+    if problem.isGoalState(currState):     # Checking if the start state is also a goal state
         return currPath
 
     frontier = Queue()
-    frontier.push( (startState, currPath) )
+    frontier.push( (currState, currPath) )     # Insert just the start state, in order to pop it first
     explored = set()
     while not frontier.isEmpty():
-        currState, currPath = frontier.pop()
+        currState, currPath = frontier.pop()    # Popping a state and the corresponding path
         # To pass autograder.py question2:
         if problem.isGoalState(currState):
             return currPath
-        #-----------------------------------
         explored.add(currState)
         frontierStates = [ t[0] for t in frontier.list ]
         for s in problem.getSuccessors(currState):
             if s[0] not in explored and s[0] not in frontierStates:
                 # Lecture code:
-                #if problem.isGoalState(s[0]):
-                #    return currPath + [s[1]]
-                frontier.push( (s[0], currPath + [s[1]]) )
-    return []   # Unable to find a solution
+                # if problem.isGoalState(s[0]):
+                #     return currPath + [s[1]]
+                frontier.push( (s[0], currPath + [s[1]]) )      # Adding the successor and its path to the frontier
+
+    return []       # If this point is reached, a solution could not be found.
 
 def uniformCostSearch(problem: SearchProblem):
-    """Search the node of least total cost first."""
-    currPath = []
-    currState = problem.getStartState()
+    """ Search the node of least total cost first. """
+    currPath = []           # The path that is popped from the frontier in each loop
+    currState = problem.getStartState()     # The state(position) that is popped for the frontier in each loop
     frontier = PriorityQueue()
     frontier.push((currState, currPath), 0)
     explored = set()
+
     while not frontier.isEmpty():
         currState, currPath = frontier.pop()
         if problem.isGoalState(currState):
             return currPath
         explored.add(currState)
-        frontierStates = [ i[2][0] for i in frontier.heap ]
+        frontierStates = [ i[2][0] for i in frontier.heap ]     # frontier.heap[i][2] is the state tuple: (position, path)
         for s in problem.getSuccessors(currState):
-            succesorPath = currPath + [s[1]]
+            successorPath = currPath + [s[1]]        # The path to the new successor
             if s[0] not in explored and s[0] not in frontierStates:
-                frontier.push( (s[0], succesorPath), problem.getCostOfActions(succesorPath) )
+                frontier.push( (s[0], successorPath), problem.getCostOfActions(successorPath) )
             else:
+                # The same state already exists
                 for i in range(0, len(frontierStates)):
+                    # Finding it
                     if s[0] == frontierStates[i]:
-                        updatedCost = problem.getCostOfActions(succesorPath)
-                        storedCost = frontier.heap[i][0]
+                        # The stored path and the new path costs have to be compared
+                        updatedCost = problem.getCostOfActions(successorPath)
+                        storedCost = frontier.heap[i][0]    # frontier.heap[i] is a tuple: (cost, counter, (node, path))
                         if storedCost > updatedCost:
-                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], succesorPath) )
-                            frontier.update( (s[0], succesorPath), updatedCost )                
-    return []
+                            # The cost must be updated
+                            # Plus, (s[0], <stored_path>) must be changed to (s[0], successorPath)
+                            # Tuples are immutable, so frontier.heap[i] must be reconstructed
+                            # First we manually change just the path, while keeping the cost unchanged
+                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], successorPath) )
+                            # and then we update the cost
+                            frontier.update( (s[0], successorPath), updatedCost )
+
+    return []       # If this point is reached, a solution could not be found.
 
 def nullHeuristic(state, problem=None):
     """
@@ -163,34 +173,45 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def evalFunction(problem: SearchProblem, state, actions, heuristicFunction):
+    """ Evaluates each state by its path cost + the heuristic cost. """
     return problem.getCostOfActions(actions) + heuristicFunction(state, problem)
 
 def aStarSearch(problem: SearchProblem, heuristic = nullHeuristic, eval = evalFunction):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    currPath = []
-    currState = problem.getStartState()
+    """ Search the node that has the lowest combined cost and heuristic first. """
+    currPath = []       # The path that is popped from the frontier in each loop
+    currState = problem.getStartState()     # The state(position) that is popped for the frontier in each loop
     frontier = PriorityQueue()
     frontier.push( (currState, currPath), eval(problem, currState, currPath, heuristic) )
     explored = set()
+
     while not frontier.isEmpty():
         currState, currPath = frontier.pop()
         if problem.isGoalState(currState):
             return currPath
         explored.add(currState)
-        frontierStates = [ i[2][0] for i in frontier.heap ]
+        frontierStates = [ i[2][0] for i in frontier.heap ]     # frontier.heap[i][2] is the state tuple: (position, path)
         for s in problem.getSuccessors(currState):
-            succesorPath = currPath + [s[1]]
+            successorPath = currPath + [s[1]]        # The path to the new successor
             if s[0] not in explored and s[0] not in frontierStates:
-                frontier.push( (s[0], succesorPath), eval(problem, s[0], succesorPath, heuristic) )
+                frontier.push( (s[0], successorPath), eval(problem, s[0], successorPath, heuristic) )
             else:
+                # The same state already exists
                 for i in range(0, len(frontierStates)):
+                    # Finding it
                     if s[0] == frontierStates[i]:
-                        updatedCost = eval(problem, s[0], succesorPath, heuristic)
-                        storedCost = frontier.heap[i][0]
+                        # The stored path and the new path costs have to be compared
+                        updatedCost = eval(problem, s[0], successorPath, heuristic)
+                        storedCost = frontier.heap[i][0]    # frontier.heap[i] is a tuple: (cost, counter, (node, path))
                         if storedCost > updatedCost:
-                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], succesorPath) )
-                            frontier.update( (s[0], succesorPath), updatedCost )
-    return []
+                            # The cost must be updated
+                            # Plus, (s[0], <stored_path>) must be changed to (s[0], successorPath)
+                            # Tuples are immutable, so frontier.heap[i] must be reconstructed
+                            # First we manually change just the path, while keeping the cost unchanged
+                            frontier.heap[i] = (storedCost, frontier.heap[i][1] , (s[0], successorPath) )
+                            # and then we update the cost
+                            frontier.update( (s[0], successorPath), updatedCost )
+
+    return []       # If this point is reached, a solution could not be found.
 
 
 # Abbreviations
