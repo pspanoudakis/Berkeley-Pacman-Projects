@@ -544,7 +544,7 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
+        # Solving the problem using BFS, is the most suitable choice
         return search.breadthFirstSearch(problem)
 
 
@@ -579,8 +579,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x,y = state
-
+        x,y = state         # Any state with a food dot, is also a goal state
         return self.food[x][y]
 
 
