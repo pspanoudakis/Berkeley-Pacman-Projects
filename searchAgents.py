@@ -483,27 +483,19 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     other hand, inadmissible or inconsistent heuristics may find optimal
     solutions, so be careful.
 
-    The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid
-    (see game.py) of either True or False. You can call foodGrid.asList() to get
-    a list of food coordinates instead.
-
-    If you want access to info like walls, capsules, etc., you can query the
-    problem.  For example, problem.walls gives you a Grid of where the walls
-    are.
-
-    If you want to *store* information to be reused in other calls to the
-    heuristic, there is a dictionary called problem.heuristicInfo that you can
-    use. For example, if you only want to count the walls once and store that
-    value, try: problem.heuristicInfo['wallCount'] = problem.walls.count()
-    Subsequent calls to this heuristic can access
-    problem.heuristicInfo['wallCount']
+    Returns the maximum distance between any 2 uneaten food dots + the minimum distance 
+    between one of them and the current position
     """
     if problem.isGoalState(state):
-        return 0
+        return 0                                # Return 0 in case of a goal state
     
-    position, foodGrid = state
+    position, foodGrid = state                  # Get the parent position and food Grid
     food = foodGrid.asList()
     maxDistance = 0
+
+    # First, we find the two dots with the biggest distance
+    # Initialize both as the first dot in the food grid
+    # There is at least one dot, otherwise a goal state would have been detected
     first = food[0]
     second = food[0]
     for i in range(len(food)):
@@ -514,6 +506,8 @@ def foodHeuristic(state, problem: FoodSearchProblem):
                 first = food[i]
                 second = food[j]
     
+    # Return the maximum distance between any 2 uneaten dots, plus the minimum distance
+    # between the current position and any one of them
     return maxDistance + min( (manhattanDistance(position, first), manhattanDistance(position, second)) )
 
 class ClosestDotSearchAgent(SearchAgent):
