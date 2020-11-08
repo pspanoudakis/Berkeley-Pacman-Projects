@@ -78,6 +78,9 @@ class ReflexAgent(Agent):
         for p in ghostPositions:
             if p == newPos or util.manhattanDistance(p, newPos) < 2:
                 return(float('-inf'))
+            elif newFood[newPos[0]][newPos[1]]:
+                if util.manhattanDistance(p, newPos) >= 2:
+                    return float('inf')
         return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
