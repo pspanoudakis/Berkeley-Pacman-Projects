@@ -69,6 +69,7 @@ class ReflexAgent(Agent):
         """
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
+        currentFood = currentGameState.getFood()
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
@@ -76,11 +77,14 @@ class ReflexAgent(Agent):
 
         ghostPositions = successorGameState.getGhostPositions()
         for p in ghostPositions:
-            if p == newPos or util.manhattanDistance(p, newPos) < 2:
+            if p == newPos or util.manhattanDistance(p, newPos) == 1:
                 return(float('-inf'))
-            elif newFood[newPos[0]][newPos[1]]:
+            elif currentFood[newPos[0]][newPos[1]]:
                 if util.manhattanDistance(p, newPos) >= 2:
                     return float('inf')
+        
+        # Pacman is not in immediate danger in the new position, but there is no food there
+        # Now estimating the nearest food dot:
         return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
