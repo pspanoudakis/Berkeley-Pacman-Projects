@@ -85,7 +85,14 @@ class ReflexAgent(Agent):
         
         # Pacman is not in immediate danger in the new position, but there is no food there
         # Now estimating the nearest food dot:
-        return successorGameState.getScore()
+        minDist = float('inf')
+        food = currentFood.asList()
+        for f in food:
+            dist = util.manhattanDistance(f, newPos)
+            if dist < minDist:
+                minDist = dist
+        #return successorGameState.getScore()
+        return -minDist
 
 def scoreEvaluationFunction(currentGameState):
     """
