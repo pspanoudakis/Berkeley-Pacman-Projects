@@ -170,7 +170,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         successors = []
         for a in actions:
             successors.append( gameState.generateSuccessor(currAgent, a) )
-        if currAgent < gameState.getNumAgents() - 1:
+        agents = gameState.getNumAgents()
+        if currAgent < agents - 1:
             return min( [self.minValue(s, currDepth, currAgent + 1) for s in successors] )
         else:
             return min( [self.maxValue(s, currDepth + 1) for s in successors] )
@@ -208,12 +209,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
             return self.evaluationFunction(gameState)
         actions = gameState.getLegalActions(0)
-        successors = []
-        for a in actions:
-            successors.append( gameState.generateSuccessor(0, a) )
         maxValue = float('-inf')
-        for s in successors:
-            maxValue = max( (maxValue, self.minValue(s, currDepth, 1, a, b)) )
+        for action in actions:
+            successor = gameState.generateSuccessor(0, action)
+            maxValue = max( (maxValue, self.minValue(successor, currDepth, 1, a, b)) )
             if maxValue > b:
                 return maxValue
             a = max( (a,maxValue) )
@@ -222,13 +221,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     def minValue(self, gameState, currDepth, currAgent, a, b):
         if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
             return self.evaluationFunction(gameState)
-        actions = gameState.getLegalActions(0)
-        successors = []
-        for a in actions:
-            successors.append( gameState.generateSuccessor(currAgent, a) )
+        actions = gameState.getLegalActions(currAgent)
         minValue = float('inf')
-        for s in successors:
-            minValue = min( (minValue, self.maxValue(s, currDepth + 1, a, b)) )
+        agents = gameState.getNumAgents()
+        for action in actions:
+            successor = gameState.generateSuccessor(currAgent, action)
+            if currAgent < agents - 1:
+                minValue = min( (minValue, self.minValue(successor, currDepth, currAgent + 1, a, b)) )
+            else:
+                minValue = min( (minValue, self.maxValue(successor, currDepth + 1, a, b)) )
             if minValue < a:
                 return minValue
             b = min( (b,minValue) )
