@@ -197,12 +197,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         actions = gameState.getLegalActions(0)
         maxResult = float('-inf')
-        for a in actions:
-            successor = gameState.generateSuccessor(0,a)
-            currentResult = self.minValue( successor, 0, 1, float('-inf'), float('inf') )
+        a = float('-inf')
+        b = float('inf')
+        for action in actions:
+            successor = gameState.generateSuccessor(0, action)
+            currentResult = self.minValue( successor, 0, 1, a, b )
             if currentResult > maxResult:
                 maxResult = currentResult
-                maxAction = a
+                maxAction = action
+                a = max( (a, currentResult) )
         return maxAction
 
     def maxValue(self, gameState, currDepth, a, b):
