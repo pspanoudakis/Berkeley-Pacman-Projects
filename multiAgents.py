@@ -198,17 +198,41 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         maxResult = float('-inf')
         for a in actions:
             successor = gameState.generateSuccessor(0,a)
-            currentResult = self.minValue( successor, float('-inf'), float('inf') )
+            currentResult = self.minValue( successor, 0, 1, float('-inf'), float('inf') )
             if currentResult > maxResult:
                 maxResult = currentResult
                 maxAction = a
         return maxAction
 
-    def maxValue(self, gameState, a, b):
-        pass
+    def maxValue(self, gameState, currDepth, a, b):
+        if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
+            return self.evaluationFunction(gameState)
+        actions = gameState.getLegalActions(0)
+        successors = []
+        for a in actions:
+            successors.append( gameState.generateSuccessor(0, a) )
+        maxValue = float('-inf')
+        for s in successors:
+            maxValue = max( (maxValue, self.minValue(s, currDepth, 1, a, b)) )
+            if maxValue > b:
+                return maxValue
+            a = max( (a,maxValue) )
+        return maxValue
 
-    def minValue(self, gameState, a, b):
-        pass
+    def minValue(self, gameState, currDepth, currAgent, a, b):
+        if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
+            return self.evaluationFunction(gameState)
+        actions = gameState.getLegalActions(0)
+        successors = []
+        for a in actions:
+            successors.append( gameState.generateSuccessor(currAgent, a) )
+        minValue = float('-inf')
+        for s in successors:
+            minValue = min( (minValue, self.maxValue(s, currDepth + 1, a, b)) )
+            if minValue < a:
+                return minValue
+            b = min( (b,minValue) )
+        return minValue
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
