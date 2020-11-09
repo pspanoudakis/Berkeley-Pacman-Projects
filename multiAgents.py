@@ -207,7 +207,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     def maxValue(self, gameState, a, b):
         pass
 
-    def minValue(self, gameState. a. b):
+    def minValue(self, gameState, a, b):
         pass
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
