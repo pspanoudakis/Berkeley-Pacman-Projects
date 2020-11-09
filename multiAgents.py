@@ -211,7 +211,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         successors = []
         for a in actions:
             successors.append( gameState.generateSuccessor(0, a) )
-        maxValue = float('inf')
+        maxValue = float('-inf')
         for s in successors:
             maxValue = max( (maxValue, self.minValue(s, currDepth, 1, a, b)) )
             if maxValue > b:
@@ -226,7 +226,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         successors = []
         for a in actions:
             successors.append( gameState.generateSuccessor(currAgent, a) )
-        minValue = float('-inf')
+        minValue = float('inf')
         for s in successors:
             minValue = min( (minValue, self.maxValue(s, currDepth + 1, a, b)) )
             if minValue < a:
