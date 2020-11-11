@@ -262,8 +262,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             if currentResult > maxResult:
                 maxResult = currentResult
                 maxAction = a
-        return maxAction 
-
+        return maxAction
+    
     def maxExpect(self, gameState, currDepth):
         if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
             return self.evaluationFunction(gameState)
@@ -274,7 +274,16 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         return max( [self.chanceExpect(s, currDepth, 1) for s in successors] )
 
     def chanceExpect(self, gameState, currDepth, currAgent):
-        pass
+        if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
+            return self.evaluationFunction(gameState)
+        actions = gameState.getLegalActions(currAgent)
+        successors = []
+        for a in actions:
+            successors.append( gameState.generateSuccessor(currAgent, a) )
+        if currAgent < gameState.getNumAgents() - 1:
+            return sum( [self.chanceExpect(s, currDepth, currAgent + 1 ) for s in successors ] )/len(successors)
+        else:
+            return sum( [self.maxExpect(s, currDepth + 1 ) for s in successors ] )/len(successors)
 
 def betterEvaluationFunction(currentGameState):
     """
