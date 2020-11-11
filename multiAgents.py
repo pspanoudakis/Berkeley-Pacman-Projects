@@ -77,11 +77,15 @@ class ReflexAgent(Agent):
 
         ghostPositions = successorGameState.getGhostPositions()
         for p in ghostPositions:
+            # If a ghost is at the new position or next to it
             if p == newPos or util.manhattanDistance(p, newPos) == 1:
+                # Don't go there
                 return(float('-inf'))
+            # If there is food in the new position
             elif currentFood[newPos[0]][newPos[1]]:
-                if util.manhattanDistance(p, newPos) >= 2:
-                    return float('inf')
+                # There is no ghost there or next to it,
+                # so go there and eat the dot
+                return float('inf')
         
         # Pacman is not in immediate danger in the new position, but there is no food there
         # Now estimating the nearest food dot:
@@ -91,7 +95,9 @@ class ReflexAgent(Agent):
             dist = util.manhattanDistance(f, newPos)
             if dist < minDist:
                 minDist = dist
-        #return successorGameState.getScore()
+        
+        # We return -minDist, because the higher value is better,
+        # and a state near a food dot is more preferable.
         return -minDist
 
 def scoreEvaluationFunction(currentGameState):
@@ -164,7 +170,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def minValue(self, gameState, currDepth, currAgent):
         if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
-            #return gameState.getScore()
             return self.evaluationFunction(gameState)
         actions = gameState.getLegalActions(currAgent)
         successors = []
@@ -178,7 +183,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
     
     def maxValue(self, gameState, currDepth):
         if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
-            #return gameState.getScore()
             return self.evaluationFunction(gameState)
         actions = gameState.getLegalActions(0)
         successors = []
@@ -250,8 +254,36 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         All ghosts should be modeled as choosing uniformly at random from their
         legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = gameState.getLegalActions(0)
+        maxResult = float('-inf')
+        for a in actions:
+            successor = gameState.generateSuccessor(0,a)
+            currentResult = self.chanceExpect(successor, 0, 1)
+            if currentResult > maxResult:
+                maxResult = currentResult
+                maxAction = a
+        return maxAction
+    
+    def maxExpect(self, gameState, currDepth):
+        if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
+            return self.evaluationFunction(gameState)
+        actions = gameState.getLegalActions(0)
+        successors = []
+        for a in actions:
+            successors.append( gameState.generateSuccessor(0, a) )
+        return max( [self.chanceExpect(s, currDepth, 1) for s in successors] )
+
+    def chanceExpect(self, gameState, currDepth, currAgent):
+        if gameState.isWin() or gameState.isLose() or currDepth == self.depth:
+            return self.evaluationFunction(gameState)
+        actions = gameState.getLegalActions(currAgent)
+        successors = []
+        for a in actions:
+            successors.append( gameState.generateSuccessor(currAgent, a) )
+        if currAgent < gameState.getNumAgents() - 1:
+            return sum( [self.chanceExpect(s, currDepth, currAgent + 1 ) for s in successors ] )/len(successors)
+        else:
+            return sum( [self.maxExpect(s, currDepth + 1 ) for s in successors ] )/len(successors)
 
 def betterEvaluationFunction(currentGameState):
     """
