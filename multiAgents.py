@@ -292,7 +292,13 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
-    "*** YOUR CODE HERE ***"
+    # Useful info
+    currentFood = currentGameState.getFood()
+    currentPosition = currentGameState.getPacmanPosition()
+    currentFood = currentGameState.getFood()
+    currentGhostStates = currentGameState.getGhostStates()
+    ghostPositions = currentGameState.getGhostPositions()
+
     util.raiseNotDefined()
 
 # Abbreviation
