@@ -255,6 +255,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         actions = gameState.getLegalActions(0)
+        maxAction = 'Stop'
         maxResult = float('-inf')
         for a in actions:
             successor = gameState.generateSuccessor(0,a)
@@ -292,14 +293,39 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
+    winBonus    =  999999999999
+    foodPenalty   =  -500
+    scaredPenalty = -1000
+    losePenalty = -999999999999
     # Useful info
-    currentFood = currentGameState.getFood()
-    currentPosition = currentGameState.getPacmanPosition()
-    currentFood = currentGameState.getFood()
-    currentGhostStates = currentGameState.getGhostStates()
-    ghostPositions = currentGameState.getGhostPositions()
+    foodGrid = currentGameState.getFood()
+    food = foodGrid.asList()
+    #currentPosition = currentGameState.getPacmanPosition()
+    #currentFood = currentGameState.getFood()
+    #currentGhostStates = currentGameState.getGhostStates()
+    #ghostPositions = currentGameState.getGhostPositions()
+    score = currentGameState.getScore() * 1000
+    evalValue = 0
+    if currentGameState.isLose():
+        evalValue += losePenalty
+    elif currentGameState.isWin():
+        evalValue += winBonus   
 
-    util.raiseNotDefined()
+    scaredLeft = 0
+    foodLeft = 0
+    position = currentGameState.getPacmanPosition()
+    ghostPositions = currentGameState.getGhostPositions()
+    leftTimeScared = [ghostState.scaredTimer for ghostState in currentGameState.getGhostStates()]
+    for p in range(len(ghostPositions)):
+        if leftTimeScared[p] > 0:
+            # treat it as food
+            scaredLeft += 1
+            evalValue += scaredPenalty
+        if util.manhattanDistance(ghostPositions[p], position) == 1:
+            # Don't go there
+            evalValue += losePenalty
+
+    return evalValue + score
 
 # Abbreviation
 better = betterEvaluationFunction
