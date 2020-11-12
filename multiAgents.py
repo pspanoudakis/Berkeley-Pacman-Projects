@@ -255,6 +255,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         actions = gameState.getLegalActions(0)
+        maxAction = 'Stop'
         maxResult = float('-inf')
         for a in actions:
             successor = gameState.generateSuccessor(0,a)
@@ -292,8 +293,51 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Bonus and Penalties
+    winBonus            =  999999999999
+    foodPenalty         = -50
+    foodDistPenalty     = -50
+    scaredPenalty       = -100
+    scaredDistPenalty   = -50
+    losePenalty         = -999999999999
+    magicFoodPenalty    = -150
+    magicFoodDistPenalty = -50
+    
+    food = currentGameState.getFood().asList()
+    score = currentGameState.getScore() * 1000
+    magic = currentGameState.getCapsules()
+    evalValue = 0
+
+    if currentGameState.isLose():
+        evalValue += losePenalty
+    elif currentGameState.isWin():
+        evalValue += winBonus   
+
+    position = currentGameState.getPacmanPosition()
+    ghostStates = currentGameState.getGhostStates()
+    ghostPositions = currentGameState.getGhostPositions()
+    leftTimeScared = [ghostState.scaredTimer for ghostState in ghostStates]
+    for p in range(len(ghostPositions)):
+        if leftTimeScared[p] > 0:
+            # treat it as food
+            dist = util.manhattanDistance(position, ghostPositions[p])
+            evalValue += scaredPenalty
+            evalValue += dist*scaredDistPenalty
+        elif util.manhattanDistance(ghostPositions[p], position) == 1:
+            # Don't go there
+            evalValue += losePenalty
+    
+    for f in food:
+        dist = util.manhattanDistance(position, f)
+        evalValue += foodPenalty
+        evalValue += dist*foodDistPenalty
+    
+    for m in magic:
+        dist = util.manhattanDistance(position, m)
+        evalValue += magicFoodPenalty
+        evalValue += dist*magicFoodDistPenalty
+
+    return evalValue + score
 
 # Abbreviation
 better = betterEvaluationFunction
