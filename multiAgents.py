@@ -293,19 +293,18 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
-    winBonus    =  999999999999
-    foodPenalty   =  -500
-    scaredPenalty = -1000
-    losePenalty = -999999999999
+    winBonus            =  999999999999
+    foodPenalty         = -500
+    foodDistPenalty     = -25
+    scaredPenalty       = -1000
+    scaredDistPenalty   = -25
+    losePenalty         = -999999999999
     # Useful info
     foodGrid = currentGameState.getFood()
     food = foodGrid.asList()
-    #currentPosition = currentGameState.getPacmanPosition()
-    #currentFood = currentGameState.getFood()
-    #currentGhostStates = currentGameState.getGhostStates()
-    #ghostPositions = currentGameState.getGhostPositions()
     score = currentGameState.getScore() * 1000
     evalValue = 0
+
     if currentGameState.isLose():
         evalValue += losePenalty
     elif currentGameState.isWin():
@@ -314,16 +313,23 @@ def betterEvaluationFunction(currentGameState):
     scaredLeft = 0
     foodLeft = 0
     position = currentGameState.getPacmanPosition()
+    ghostStates = currentGameState.getGhostStates()
     ghostPositions = currentGameState.getGhostPositions()
-    leftTimeScared = [ghostState.scaredTimer for ghostState in currentGameState.getGhostStates()]
+    leftTimeScared = [ghostState.scaredTimer for ghostState in ghostStates]
     for p in range(len(ghostPositions)):
         if leftTimeScared[p] > 0:
             # treat it as food
-            scaredLeft += 1
+            dist = util.manhattanDistance(position, ghostPositions[p])
             evalValue += scaredPenalty
-        if util.manhattanDistance(ghostPositions[p], position) == 1:
+            evalValue += dist*scaredDistPenalty
+        elif util.manhattanDistance(ghostPositions[p], position) == 1:
             # Don't go there
             evalValue += losePenalty
+    
+    for f in food:
+        dist = util.manhattanDistance(position, f)
+        evalValue += foodPenalty
+        evalValue += dist*foodDistPenalty
 
     return evalValue + score
 
