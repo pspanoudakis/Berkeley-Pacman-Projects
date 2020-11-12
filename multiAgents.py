@@ -293,16 +293,19 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
+    # Bonus and Penalties
     winBonus            =  999999999999
-    foodPenalty         = -500
-    foodDistPenalty     = -25
-    scaredPenalty       = -1000
-    scaredDistPenalty   = -25
+    foodPenalty         = -50
+    foodDistPenalty     = -50
+    scaredPenalty       = -100
+    scaredDistPenalty   = -50
     losePenalty         = -999999999999
-    # Useful info
-    foodGrid = currentGameState.getFood()
-    food = foodGrid.asList()
+    magicFoodPenalty    = -150
+    magicFoodDistPenalty = -50
+    
+    food = currentGameState.getFood().asList()
     score = currentGameState.getScore() * 1000
+    magic = currentGameState.getCapsules()
     evalValue = 0
 
     if currentGameState.isLose():
@@ -310,8 +313,6 @@ def betterEvaluationFunction(currentGameState):
     elif currentGameState.isWin():
         evalValue += winBonus   
 
-    scaredLeft = 0
-    foodLeft = 0
     position = currentGameState.getPacmanPosition()
     ghostStates = currentGameState.getGhostStates()
     ghostPositions = currentGameState.getGhostPositions()
@@ -330,6 +331,11 @@ def betterEvaluationFunction(currentGameState):
         dist = util.manhattanDistance(position, f)
         evalValue += foodPenalty
         evalValue += dist*foodDistPenalty
+    
+    for m in magic:
+        dist = util.manhattanDistance(position, m)
+        evalValue += magicFoodPenalty
+        evalValue += dist*magicFoodDistPenalty
 
     return evalValue + score
 
