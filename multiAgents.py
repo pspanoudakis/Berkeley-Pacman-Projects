@@ -27,8 +27,7 @@ class ReflexAgent(Agent):
     it in any way you see fit, so long as you don't touch our method
     headers.
     """
-
-
+    
     def getAction(self, gameState):
         """
         You do not need to change this method, but you're welcome to.
