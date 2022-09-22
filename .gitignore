@@ -1,0 +1,6 @@
+**/zip/*
+
+__pycache__
+
+.vscode
+*.code-workspace
